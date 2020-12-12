@@ -205,8 +205,10 @@ public final class RomanNumeral extends Number
     }
     
     private static void cache(RomanNumeral numeral) {
-        VALUE_CACHE.put(numeral.symbols, numeral.value);
-        NUMERAL_CACHE[numeral.value] = numeral;
+        if (NUMERAL_CACHE[numeral.value] == null) {
+            VALUE_CACHE.put(numeral.symbols, numeral.value);
+            NUMERAL_CACHE[numeral.value] = numeral;
+        }
     }
     
     /*
