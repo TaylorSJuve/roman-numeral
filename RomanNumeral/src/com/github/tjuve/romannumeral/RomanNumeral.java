@@ -99,17 +99,13 @@ public final class RomanNumeral extends Number
     public final int value; // Could be short if needed
     
     private RomanNumeral(int value) {
-        this(toString(value), value);
+        symbols = toString(value);
+        this.value = value;
     }
     
     private RomanNumeral(String symbols) {
-        this(symbols, valueOf(symbols));
-    }
-    
-    // Caution! Could make valueOf(this.symbols) != this.value
-    private RomanNumeral(String symbols, int value) {
         this.symbols = symbols;
-        this.value = value; 
+        value = valueOf(symbols);
     }
     
     public static RomanNumeral of(int value) {
@@ -118,7 +114,9 @@ public final class RomanNumeral extends Number
         }
         RomanNumeral numeral = NUMERAL_CACHE[value];
         if (numeral == null) {
-            numeral = constructAndCache(toString(value), value);
+            numeral = new RomanNumeral(value);
+            VALUE_CACHE.put(numeral.symbols, value);
+            NUMERAL_CACHE[value] = numeral;
         }
         return numeral;
     }
@@ -137,7 +135,9 @@ public final class RomanNumeral extends Number
         RomanNumeral numeral;
         if (value == null) {
             // throws NumberFormatException
-            numeral = constructAndCache(symbols, valueOf(symbols, true));
+            numeral = new RomanNumeral(symbols);
+            VALUE_CACHE.put(symbols, value);
+            NUMERAL_CACHE[numeral.value] = numeral;
         } else {
             numeral = NUMERAL_CACHE[value];
         }
@@ -202,13 +202,6 @@ public final class RomanNumeral extends Number
     
     public static RomanNumeral min(RomanNumeral a, RomanNumeral b) {
         return maxOrMin((x, y) -> Math.min(x, y), a, b);
-    }
-    
-    private static RomanNumeral constructAndCache(String symbols, int value) {
-        RomanNumeral numeral = new RomanNumeral(symbols, value);
-        VALUE_CACHE.put(symbols, value);
-        NUMERAL_CACHE[value] = numeral;
-        return numeral;
     }
     
     /*
