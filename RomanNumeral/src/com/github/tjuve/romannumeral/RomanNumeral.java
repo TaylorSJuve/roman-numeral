@@ -6,8 +6,10 @@
 
 package com.github.tjuve.romannumeral;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.IntBinaryOperator;
 
 /**
@@ -101,11 +103,13 @@ public final class RomanNumeral extends Number
     private RomanNumeral(int value) {
         symbols = toString(value);
         this.value = value;
+        cache(this);
     }
     
     private RomanNumeral(String symbols) {
         this.symbols = symbols;
         value = valueOf(symbols);
+        cache(this);
     }
     
     public static RomanNumeral of(int value) {
@@ -115,8 +119,6 @@ public final class RomanNumeral extends Number
         RomanNumeral numeral = NUMERAL_CACHE[value];
         if (numeral == null) {
             numeral = new RomanNumeral(value);
-            VALUE_CACHE.put(numeral.symbols, value);
-            NUMERAL_CACHE[value] = numeral;
         }
         return numeral;
     }
@@ -136,8 +138,6 @@ public final class RomanNumeral extends Number
         if (value == null) {
             // throws NumberFormatException
             numeral = new RomanNumeral(symbols);
-            VALUE_CACHE.put(symbols, value);
-            NUMERAL_CACHE[numeral.value] = numeral;
         } else {
             numeral = NUMERAL_CACHE[value];
         }
@@ -202,6 +202,11 @@ public final class RomanNumeral extends Number
     
     public static RomanNumeral min(RomanNumeral a, RomanNumeral b) {
         return maxOrMin((x, y) -> Math.min(x, y), a, b);
+    }
+    
+    private static void cache(RomanNumeral numeral) {
+        VALUE_CACHE.put(numeral.symbols, numeral.value);
+        NUMERAL_CACHE[numeral.value] = numeral;
     }
     
     /*
