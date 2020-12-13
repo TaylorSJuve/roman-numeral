@@ -6,10 +6,8 @@
 
 package com.github.tjuve.romannumeral;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.IntBinaryOperator;
 
 /**
@@ -101,15 +99,25 @@ public final class RomanNumeral extends Number
     public final int value; // Could be short if needed
     
     private RomanNumeral(int value) {
-        symbols = toString(value);
-        this.value = value;
-        cache(this);
+        this(toString(value), value);
     }
     
     private RomanNumeral(String symbols) {
+        this(symbols, valueOf(symbols, true, false));
+    }
+    
+    /*
+     * Caution: valueOf(symbols) must equal value and
+     * toString(value) must equal symbols for this to be valid!
+     */
+    private RomanNumeral(String symbols, int value) {
         this.symbols = symbols;
-        value = valueOf(symbols);
-        cache(this);
+        this.value = value;
+        
+        if (NUMERAL_CACHE[value] == null) {
+            VALUE_CACHE.put(symbols, value);
+            NUMERAL_CACHE[value] = this;
+        }
     }
     
     public static RomanNumeral of(int value) {
@@ -153,7 +161,7 @@ public final class RomanNumeral extends Number
     }
     
     public static int valueOf(String symbols) {
-        return valueOf(symbols, true);
+        return valueOf(symbols, true, true);
     }
     
     public static boolean isValid(int value) {
@@ -161,7 +169,7 @@ public final class RomanNumeral extends Number
     }
     
     public static boolean isValid(String symbols) {
-        return valueOf(symbols, false) != INVALID_SYMBOLS_INDICATOR;
+        return valueOf(symbols, false, true) != INVALID_SYMBOLS_INDICATOR;
     }
     
     public static RomanNumeral addExact(RomanNumeral x, RomanNumeral y) {
@@ -204,13 +212,6 @@ public final class RomanNumeral extends Number
         return maxOrMin((x, y) -> Math.min(x, y), a, b);
     }
     
-    private static void cache(RomanNumeral numeral) {
-        if (NUMERAL_CACHE[numeral.value] == null) {
-            VALUE_CACHE.put(numeral.symbols, numeral.value);
-            NUMERAL_CACHE[numeral.value] = numeral;
-        }
-    }
-    
     /*
      * symbols must be non-empty and exactly (from left-to-right):
     * 0-3 M's before 
@@ -219,7 +220,7 @@ public final class RomanNumeral extends Number
     * IX, IV, or 0-1 V and 0-3 I's
     * eg. "MMCDLXXXIV"
     */
-    private static int valueOf(String s, boolean throwing) {
+    private static int valueOf(String s, boolean throwing, boolean construct) {
         if (s == null) {
             if (throwing) {
                 throw new NumberFormatException(forNullInput());
@@ -290,6 +291,10 @@ public final class RomanNumeral extends Number
             }
             
             prevValue = curValue;
+        }
+        
+        if (construct) {
+            new RomanNumeral(s, totalValue);
         }
         
         return totalValue;
