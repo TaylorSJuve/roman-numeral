@@ -1,11 +1,12 @@
 /*
- * RomanNumeral.java        1.0 12/11/2020 (TODO version info)
+ * RomanNumeral.java        1.1 12/16/2020 (TODO version info)
  * 
  * No copyright
  */
 
 package com.github.tjuve.romannumeral;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.IntBinaryOperator;
@@ -13,11 +14,11 @@ import java.util.function.IntBinaryOperator;
 /**
  * TODO Class description goes here.
  *
- * @version 1.0 11 Dec 2020  
+ * @version 1.1 16 Dec 2020  
  * @author Taylor Juve
  */
-public final class RomanNumeral extends Number 
-                                implements Comparable<RomanNumeral> {
+public final class RomanNumeral implements Serializable,
+                                           Comparable<RomanNumeral> {
     /*
      * TODO Class implementation comment can go here
      */
@@ -133,7 +134,7 @@ public final class RomanNumeral extends Number
         }
         return numeral;
     }
-    
+
     public static RomanNumeral parse(CharSequence symbols, int beginIndex,
                                      int endIndex) 
                                              throws NumberFormatException {
@@ -376,35 +377,4 @@ public final class RomanNumeral extends Number
     public String toString() {
         return symbols;
     }
-    
-    @Override
-    public byte byteValue() {
-        return (byte) value; // narrowing primitive conversion
-    }
-    
-    @Override
-    public short shortValue() {
-        // lossless conversion b/c MAX_VALUE (3999) < Short.MAX_VALUE
-        return (short) value;
-    }
-
-    @Override
-    public int intValue() {
-        return value;
-    }
-    
-    @Override
-    public long longValue() {
-        return value;
-    }
-    
-    @Override
-    public double doubleValue() {
-        return value;
-    }
-
-    @Override
-    public float floatValue() {
-        return value;
-    }
-}   
+}
