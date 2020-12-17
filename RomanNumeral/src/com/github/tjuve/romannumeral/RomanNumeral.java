@@ -87,7 +87,7 @@ public final class RomanNumeral implements Serializable,
          */
         public final int value;
         
-        /*
+        /**
          * The maximum number of consecutive occurrences of this Symbol in
          * Standard form
          */
@@ -142,21 +142,32 @@ public final class RomanNumeral implements Serializable,
         }
     }
     
-    // MMMCMXCIX = (non-standard) IMMMM = 3,999
+    private static class NumeralCache {
+        private static final RomanNumeral[] CACHE
+                = new RomanNumeral[NUM_UNIQUE_NUMERALS + MIN_VALUE];
+        
+        private static RomanNumeral get(String symbols) {
+            Integer value = ValueCache.CACHE.get(symbols);
+            if (value == null) {
+                return null;
+            } else {
+                return CACHE[value];
+            }
+        }
+    }
+    
+    private static class ValueCache {
+        private static final Map<String, Integer> CACHE
+                = new HashMap<String, Integer>(NUM_UNIQUE_NUMERALS / 3 * 4 + 1);
+    }
+    
     public static final int MAX_VALUE = Symbol.M.value 
                                         * (Symbol.M.maxNumConsecutive + 1)
                                         - Symbol.I.value;
-    public static final int MIN_VALUE = Symbol.I.value; //  = 1
+    public static final int MIN_VALUE = Symbol.I.value;
     
     private static final int NUM_UNIQUE_NUMERALS = MAX_VALUE - MIN_VALUE + 1;
-                                              // = 3999
-    // index of a RomanNumeral is equal to it's value
-    private static final RomanNumeral[] NUMERAL_CACHE
-            = new RomanNumeral[NUM_UNIQUE_NUMERALS + MIN_VALUE]; // 4000
-    // Symbols map to their value
-    private static final Map<String, Integer> VALUE_CACHE
-                                        // this initalCapacity ensures no resize
-            = new HashMap<String, Integer>(NUM_UNIQUE_NUMERALS / 3 * 4 + 1); 
+                                              
     private static final int MAX_SYMBOLS_LENGTH = 15;
     private static final String[] THOUSANDS = {"", "M", "MM", "MMM"};
     private static final String[] HUNDREDS = 
@@ -190,9 +201,9 @@ public final class RomanNumeral implements Serializable,
         this.symbols = symbols;
         this.value = value;
         
-        if (NUMERAL_CACHE[value] == null) {
-            VALUE_CACHE.put(symbols, value);
-            NUMERAL_CACHE[value] = this;
+        if (NumeralCache.CACHE[value] == null) {
+            ValueCache.CACHE.put(symbols, value);
+            NumeralCache.CACHE[value] = this;
         }
     }
     
@@ -200,7 +211,8 @@ public final class RomanNumeral implements Serializable,
         if (!isValid(value)) {
             throw new IllegalArgumentException(forInput(value));
         }
-        RomanNumeral numeral = NUMERAL_CACHE[value];
+        
+        RomanNumeral numeral = NumeralCache.CACHE[value];
         if (numeral == null) {
             numeral = new RomanNumeral(value);
         }
@@ -217,13 +229,9 @@ public final class RomanNumeral implements Serializable,
     }
     
     public static RomanNumeral parse(String symbols) {
-        Integer value = VALUE_CACHE.get(symbols);
-        RomanNumeral numeral;
-        if (value == null) {
-            // throws NumberFormatException
-            numeral = new RomanNumeral(symbols);
-        } else {
-            numeral = NUMERAL_CACHE[value];
+        RomanNumeral numeral = NumeralCache.get(symbols);
+        if (numeral == null) {
+            numeral = new RomanNumeral(symbols); // throws NumberFormatException
         }
         return numeral;
     }
@@ -233,7 +241,7 @@ public final class RomanNumeral implements Serializable,
             throw new IllegalArgumentException(forInput(value));
         }
         
-        RomanNumeral numeral = NUMERAL_CACHE[value];
+        RomanNumeral numeral = NumeralCache.CACHE[value];
         if (numeral != null) {
             return numeral.symbols;
         }
@@ -305,13 +313,13 @@ public final class RomanNumeral implements Serializable,
     }
     
     /*
-     * symbols must be non-empty and exactly (from left-to-right):
-    * 0-3 M's before 
-    * CM, CD, or 0-1 D and 0-3 C's before
-    * XC, XL, or 0-1 L and 0-3 X's before
-    * IX, IV, or 0-1 V and 0-3 I's
-    * eg. "MMCDLXXXIV"
-    */
+     * s must be non-empty and exactly (from left-to-right):
+     * 0-3 M's before 
+     * CM, CD, or 0-1 D and 0-3 C's before
+     * XC, XL, or 0-1 L and 0-3 X's before
+     * IX, IV, or 0-1 V and 0-3 I's
+     * eg. "MMCDLXXXIV"
+     */
     private static int valueOf(String s, boolean throwing, boolean construct) {
         if (s == null) {
             if (throwing) {
@@ -327,10 +335,10 @@ public final class RomanNumeral implements Serializable,
             return INVALID_SYMBOLS_INDICATOR;
         }
         
-        Integer value = VALUE_CACHE.get(s);
+        Integer value = ValueCache.CACHE.get(s);
         if (value != null) {
             return value;
-        }
+        } 
         
         int totalValue = 0;
         int prevValue = RomanNumeral.MIN_VALUE - 1; // primed
