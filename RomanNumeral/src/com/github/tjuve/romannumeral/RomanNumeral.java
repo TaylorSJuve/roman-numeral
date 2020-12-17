@@ -142,12 +142,39 @@ public final class RomanNumeral implements Serializable,
         }
     }
     
+    /**
+     * Cache to store each unique {@code RomanNumeral}.
+     * <p>
+     * The cache is initialized on first usage.
+     */
     private static class NumeralCache {
+        /**
+         * Stores each unique {@code RomanNumeral}.
+         * <p>
+         * The index of a {@code RomanNumeral} is equal to it's {@code value}
+         * field (eg. {@code VI} goes at index {@code 6}.)
+         * 
+         * @implNote Must manually ensure RomanNumerals are properly indexed
+         */
         private static final RomanNumeral[] CACHE
                 = new RomanNumeral[NUM_UNIQUE_NUMERALS + MIN_VALUE];
     }
     
+    /**
+     * Cache to store each unique {@code RomanNumeral}'s {@code value} field.
+     * <p>
+     * The cache is initialized on first usage.
+     */
     private static class ValueCache {
+        /**
+         * Maps from each unique {@code RomanNumeral}'s {@code symbols} field
+         * to it's {@code value} field (eg. {@code "VI"} maps to {@code 6}.)
+         * 
+         * @implNote Must manually ensure to associate each {@code value} with
+         *           the specified correct {@code symbols}
+         * @implNote {@link RomanNumeral#NUM_UNIQUE_NUMERALS} can be stored
+         *           without needed to resize.
+         */
         private static final Map<String, Integer> CACHE
                 = new HashMap<String, Integer>(NUM_UNIQUE_NUMERALS / 3 * 4 + 1);
     }
