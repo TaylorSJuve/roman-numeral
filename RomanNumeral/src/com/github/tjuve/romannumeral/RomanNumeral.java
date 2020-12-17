@@ -145,15 +145,6 @@ public final class RomanNumeral implements Serializable,
     private static class NumeralCache {
         private static final RomanNumeral[] CACHE
                 = new RomanNumeral[NUM_UNIQUE_NUMERALS + MIN_VALUE];
-        
-        private static RomanNumeral get(String symbols) {
-            Integer value = ValueCache.CACHE.get(symbols);
-            if (value == null) {
-                return null;
-            } else {
-                return CACHE[value];
-            }
-        }
     }
     
     private static class ValueCache {
@@ -229,9 +220,13 @@ public final class RomanNumeral implements Serializable,
     }
     
     public static RomanNumeral parse(String symbols) {
-        RomanNumeral numeral = NumeralCache.get(symbols);
-        if (numeral == null) {
+        Integer value = ValueCache.CACHE.get(symbols);
+        
+        RomanNumeral numeral;
+        if (value == null) {
             numeral = new RomanNumeral(symbols); // throws NumberFormatException
+        } else {
+            numeral = NumeralCache.CACHE[value];
         }
         return numeral;
     }
