@@ -1,5 +1,5 @@
 /*
- * RomanNumeral.java        1.1 12/16/2020 (TODO version info)
+ * RomanNumeral.java        1.0.0 12/17/2020
  * 
  * No copyright
  */
@@ -12,11 +12,32 @@ import java.util.Map;
 import java.util.function.IntBinaryOperator;
 
 /**
- * TODO Class description goes here.
- *
- * @version 1.1 16 Dec 2020  
- * @author Taylor Juve
- */
+ * A Roman numeral in 
+ * <a href="https://en.wikipedia.org/wiki/Roman_numerals#Standard_form">
+ * Standard form</a>, such as {@code MMMCMXCIX}.
+ * <p>
+ * {@code RomanNumeral} is an immutable number object that represents a Roman
+ * numeral in Standard form. An object of type {@code RomanNumeral} contains
+ * two fields, a field whose type is {@code String} and a field whose type is 
+ * {@code int}. These fields represent a Roman numeral's symbols and value,
+ * respectively, such as the RomanNumeral representing {@code XIV} would contain
+ * {@code "XIV"} and {@code 14}.
+ * <p>
+ * In addition, this class provides methods for converting an {@code int} to a 
+ * {@code String} of Roman numeral symbols and a {@code String} of Roman
+ * numeral symbols to an {@code int}, as well as other constants and methods
+ * useful when dealing with an {@code RomanNumeral}.
+ * <p>
+ * This is a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/
+doc-files/ValueBased.html">value-based</a> class; use of identity-sensitive
+ * operations (including reference equality ({@code ==}), identity hash code,
+ * or synchronization) on instances of {@code RomanNumeral} may have
+ * unpredictable results and should be avoided.
+ * 
+ * @since   12-17-2020
+ * @version 1.0.0 
+ * @author  Taylor Juve
+ */ 
 public final class RomanNumeral implements Serializable,
                                            Comparable<RomanNumeral> {
     /*
