@@ -41,9 +41,39 @@ doc-files/ValueBased.html">value-based</a> class; use of identity-sensitive
 public final class RomanNumeral implements Serializable,
                                            Comparable<RomanNumeral> {
     /*
-     * TODO Class implementation comment can go here
+     * Built to run on Java SE Runtime Environment 8u271
      */
-    public enum Symbol {
+    
+    /**
+     * Roman numerals in Standard form are represented by combinations of these 
+     * letters. Each symbol has a fixed {@code int} value:
+     * <p>
+     * <table>
+     *   <tbody>
+     *     <tr>
+     *       <th>Symbol</th>
+     *       <td>I</td>
+     *       <td>V</td>
+     *       <td>X</td>
+     *       <td>L</td>
+     *       <td>C</td>
+     *       <td>D</td>
+     *       <td>M</td>
+     *     </tr>
+     *     <tr>
+     *       <th>Value</th>
+     *       <td>1</td>
+     *       <td>5</td>
+     *       <td>10</td>
+     *       <td>50</td>
+     *       <td>100</td>
+     *       <td>500</td>
+     *       <td>1000</td>
+     *     </tr>
+     *   </tbody>
+     * </table>
+     */
+    public enum Symbol  {
         I(1),
         V(5),
         X(10),
@@ -52,10 +82,22 @@ public final class RomanNumeral implements Serializable,
         D(500),
         M(1_000);
 
+        /**
+         * The value of this enum constant
+         */
         public final int value;
         
-        private final int maxNumConsecutive;
+        /*
+         * The maximum number of consecutive occurrences of this Symbol in
+         * Standard form
+         */
+        private final int maxNumConsecutive; 
         
+        /**
+         * Constructs an enum constant to represent the given value.
+         *
+         * @param   value   the value to be represented by the enum constant.
+         */
         Symbol(int value) {
             this.value = value;
             
@@ -71,14 +113,23 @@ public final class RomanNumeral implements Serializable,
             }
         }
         
-        // Much faster than implicitly defined valueOf(String)
-        public static Symbol valueOf(char c) {
+        /**
+         * Returns the enum constant with the specified name. The name must 
+         * match exactly an identifier used to declare an enum constant of
+         * type {@code Symbol}.
+         * 
+         * @param   name   
+         * @return  the enum constant with the specified name if declared;
+         *          {@code null} otherwise.
+         * @implNote Much faster than implicitly defined valueOf(String)
+         */
+        public static Symbol valueOf(char name) {
             /*
              * Could use if/else if/else instead
              * Will need to update manually after adding/removing a Symbol
              * Faster than automatically updating (using values())
              */
-            switch(c) {
+            switch(name) {
                 case 'I': return Symbol.I;
                 case 'V': return Symbol.V;
                 case 'X': return Symbol.X;
