@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -129,8 +128,6 @@ public class RomanNumeralTest {
             + "romannumeral/tests/references/ExpectedRomanNumerals1.txt";
     public static final int NUM_REPEATS_TO_CHECK_FOR_CONSISTENY = 5;
 
-    private static final int MAX_NUM_CONSECUTIVE = 3;
-    
     private static List<Arguments> expectedSymbolsValuePairs;
     private static List<String> invalidSymbols;
     private static List<TestNumeral> testNumerals;
@@ -205,158 +202,6 @@ public class RomanNumeralTest {
             public void ofInvalidTest(int invalidValue) {
                 assertThrows(IllegalArgumentException.class, 
                              () -> RomanNumeral.of(invalidValue));
-            }
-        }
-        
-        @Nested
-        @TestInstance(Lifecycle.PER_CLASS)
-        @DisplayName("parse(CharSequence, int, int)")
-        public class parseCharSequenceTests {
-            /*
-             * All non-empty substrings of valid symbols are valid symbols so
-             * this tests only the whole CharSequence
-             */
-            @DisplayName("parse(valid CharSequence, int, int)")
-            @ParameterizedTest(name = "parse(\"{0}\", 0, \"{0}\".length())")
-            @MethodSource("com.github.tjuve.romannumeral.RomanNumeralTest"
-                          + "#expectedSymbolsValuePairsProvider()")
-            public void parseValidCharSequenceTest(String expectedSymbols,
-                                                   int expectedValue) {
-                RomanNumeral numeral = assertDoesNotThrow(
-                        () -> RomanNumeral.parse(expectedSymbols, 0,
-                                                 expectedSymbols.length()));
-                assertDataEquals(expectedSymbols, expectedValue, numeral);
-            }
-            
-            @DisplayName("parse(invalid CharSequence, int, int)")
-            @ParameterizedTest(name = "parse(\"{0}\", 0, \"{0}\".length())")
-            @MethodSource("com.github.tjuve.romannumeral.RomanNumeralTest"
-                          + "#invalidSymbolsProvider()")
-            public void parseInvalidCharSequenceTest(String invalidSymbols) {
-                int endIndex;
-                if (invalidSymbols == null) {
-                    endIndex = 0;
-                } else {
-                    endIndex = invalidSymbols.length();
-                }
-                assertThrows(NumberFormatException.class,
-                             () -> RomanNumeral.parse(invalidSymbols, 0, 
-                                                      endIndex));
-            }
-            
-            @DisplayName("parse(null, 0, 1)")
-            @Test
-            public void parseNullCharSequenceTest() {
-                assertThrows(NumberFormatException.class,
-                             () -> RomanNumeral.parse(null, 0, 1));
-            }
-        
-            @DisplayName("parse(CharSequence, valid pair of ints)")
-            @ParameterizedTest(name = "parse(\"{2}\", {3}, {4})")
-            @MethodSource("parseCharSequenceValidBoundsTestArgsProvider")
-            public void parseCharSequenceValidBoundsTest(String expectedSymbols,
-                                                         int expectedValue,
-                                                         String validSymbols,
-                                                         int beginIndex,
-                                                         int endIndex) {
-                RomanNumeral numeral = assertDoesNotThrow(
-                        () -> RomanNumeral.parse(validSymbols, beginIndex,
-                                                 endIndex));
-                assertDataEquals(expectedSymbols, expectedValue, numeral);
-            }
-            
-            @DisplayName("parse(CharSequence, invalid pair of ints)")
-            @ParameterizedTest(name = "parse(\"{0}\", {1}, {2})")
-            @MethodSource("parseCharSequenceInvalidBoundsTestArgsProvider")
-            public void parseCharSequenceInvalidBoundsTest(String symbols,
-                                                           int beginIndex,
-                                                           int endIndex) {
-                assertThrows(IndexOutOfBoundsException.class,
-                             () -> RomanNumeral.parse(symbols, beginIndex,
-                                                      endIndex));
-            }
-            
-            private Stream<Arguments> 
-                    parseCharSequenceValidBoundsTestArgsProvider() {
-                // Build longest valid String of symbols ("MMMDCCCLXXXVIII")
-                Symbol[] symbols = Symbol.values();
-                StringBuilder strBuilder = new StringBuilder(MAX_NUM_CONSECUTIVE
-                                                             * symbols.length);
-                int[] values = new int[strBuilder.capacity()];
-                int valuesIndex = 0; 
-                
-                Arrays.sort(symbols, new Comparator<Symbol>() {
-                    @Override
-                    public int compare(Symbol s1, Symbol s2) {
-                        return s1.value - s2.value;
-                    }
-                });
-                
-                for (int i = symbols.length - 1; i >= 0; i--) {
-                    Symbol symbol = symbols[i];
-                    
-                    int numRepeats;
-                    if (String.valueOf(symbol.value).startsWith("1")) {
-                        numRepeats = MAX_NUM_CONSECUTIVE;
-                    } else {
-                        numRepeats = 1;
-                    }
-                    
-                    String name = symbol.name();
-                    for (int j = 0; j < numRepeats; j++) {
-                        strBuilder.append(name);
-                        values[valuesIndex] = symbol.value;
-                        valuesIndex++;
-                    }
-                }
-                String symbolsStr = strBuilder.toString();
-                
-                Builder<Arguments> argsBuilder = Stream.builder();
-                initExpectedSymbolsValuePairs();
-                
-                int numConsecutive = 1;
-                int prevValue = RomanNumeral.MIN_VALUE - 1;
-                for (int beginIndex = symbolsStr.length() - 1; beginIndex >= 0;
-                        beginIndex--) {
-                    if (values[beginIndex] == prevValue) {
-                        numConsecutive++;
-                    } else {
-                        numConsecutive = 1;
-                    }
-                    
-                    int value = 0;
-                    for (int endIndex = beginIndex + 1;
-                            endIndex <= symbolsStr.length(); endIndex++) {
-                        value += values[endIndex - 1];
-                        
-                        if (endIndex >= beginIndex + numConsecutive) {
-                            Object[] symbolsValuePair
-                                    = expectedSymbolsValuePairs
-                                      .get(value - 1).get();
-                            
-                            argsBuilder.accept(
-                                    Arguments.of((String) symbolsValuePair[0], 
-                                                 (int) symbolsValuePair[1],
-                                                 symbolsStr, beginIndex,
-                                                 endIndex));
-                        }
-                    }
-                    
-                    prevValue = values[beginIndex];
-                }
-                
-                return argsBuilder.build();
-            }
-            
-            private Stream<Arguments> 
-                    parseCharSequenceInvalidBoundsTestArgsProvider() {
-                String symbol = Symbol.I.name();
-                return Stream.of(Arguments.of(symbol, -1, 1), // negative
-                                 Arguments.of(symbol, 0, -1), // negative
-                                 // beyond end
-                                 Arguments.of(symbol, 0, symbol.length() + 1),
-                                 // end less than begin
-                                 Arguments.of(symbol, 1, 0)); 
             }
         }
         

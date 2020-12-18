@@ -14,10 +14,10 @@ import java.util.function.IntBinaryOperator;
 /**
  * A Roman numeral in 
  * <a href="https://en.wikipedia.org/wiki/Roman_numerals#Standard_form">
- * Standard form</a>, such as {@code MMMCMXCIX}.
+ * standard form</a>, such as {@code MMMCMXCIX}.
  * <p>
  * {@code RomanNumeral} is an immutable number object that represents a Roman
- * numeral in Standard form. An object of type {@code RomanNumeral} contains
+ * numeral in standard form. An object of type {@code RomanNumeral} contains
  * two fields, a field whose type is {@code String} and a field whose type is 
  * {@code int}. These fields represent a Roman numeral's symbols and value,
  * respectively, such as the RomanNumeral representing {@code XIV} would contain
@@ -45,7 +45,7 @@ public final class RomanNumeral implements Serializable,
      */
     
     /**
-     * Roman numerals in Standard form are represented by combinations of these 
+     * Roman numerals in standard form are represented by combinations of these 
      * symbols. Each symbol has a fixed {@code int} value:
      * <p>
      * <table>
@@ -89,7 +89,7 @@ public final class RomanNumeral implements Serializable,
         
         /**
          * The maximum number of consecutive occurrences of this Symbol in
-         * Standard form
+         * standard form
          */
         private final int maxNumConsecutive; 
         
@@ -156,7 +156,7 @@ public final class RomanNumeral implements Serializable,
     public static final int MIN_VALUE = Symbol.I.value;
     
     /**
-     * A constant holding the number of unique Roman numerals in Standard form,
+     * A constant holding the number of unique Roman numerals in standard form,
      *  3999.
      */
     private static final int NUM_UNIQUE_NUMERALS = MAX_VALUE - MIN_VALUE + 1;
@@ -256,17 +256,17 @@ public final class RomanNumeral implements Serializable,
     
     /**
      * Constructs a newly allocated {@code RomanNumeral} object that represents
-     * the Roman numeral in Standard form with the specified {@code int} value.
+     * the Roman numeral in standard form with the specified {@code int} value.
      *
-     * @param   value   the value of the Roman numeral in Standard form to be
-     *                  represented by the {@code RomanNumeral} object.
+     * @param   value    the value of the Roman numeral in standard form to be
+     *                   represented by the {@code RomanNumeral} object.
      * @throws  IllegalArgumentException    if the {@code int} is not
      *                                      representable by a Roman numeral in
-     *                                      Standard form.
+     *                                      standard form.
      * @see     #isValid(int)
      * 
      * @implNote Only one instance of RomanNumeral per unique Roman numeral in
-     * Standard form should exist.
+     * standard form should exist.
      */
     private RomanNumeral(int value) {
         this.symbols = toString(value);
@@ -277,18 +277,19 @@ public final class RomanNumeral implements Serializable,
     
     /**
      * Constructs a newly allocated {@code RomanNumeral} object that represents
-     * the Roman numeral in Standard form with the specified {@code String}
+     * the Roman numeral in standard form with the specified {@code String}
      * symbols.
      *
-     * @param      symbols   the symbols of Roman numeral in Standard form to 
-     *                       be represented by the {@code RomanNumeral} object.
-     * @exception  NumberFormatException  if the {@code String} does not
-     *                                    contain a parsable Roman numeral in
-     *                                    Standard form.
+     * @param      symbols    the symbols of the Roman numeral in standard form
+     *                        to be represented by the {@code RomanNumeral}
+     *                        object.
+     * @exception  NumberFormatException    if the {@code String} does not
+     *                                      contain a parsable Roman numeral in
+     *                                      standard form.
      * @see     #isValid(String)
      * 
      * @implNote Only one instance of RomanNumeral per unique Roman numeral in
-     * Standard form should exist.
+     * standard form should exist.
      */
     /*
      * symbols must be non-empty and exactly (from left-to-right):
@@ -373,16 +374,6 @@ public final class RomanNumeral implements Serializable,
         return numeral;
     }
 
-    public static RomanNumeral parse(CharSequence symbols, int beginIndex,
-                                     int endIndex) 
-                                             throws NumberFormatException {
-        if (symbols == null) {
-            throw new NumberFormatException(forNullInput());
-        }
-        
-        return parse((String) symbols.subSequence(beginIndex, endIndex));
-    }
-    
     public static RomanNumeral parse(String symbols) {
         Integer value = valueCache.get(symbols);
         
