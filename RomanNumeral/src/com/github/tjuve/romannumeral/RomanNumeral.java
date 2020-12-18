@@ -46,7 +46,7 @@ public final class RomanNumeral implements Serializable,
     
     /**
      * Roman numerals in Standard form are represented by combinations of these 
-     * letters. Each symbol has a fixed {@code int} value:
+     * symbols. Each symbol has a fixed {@code int} value:
      * <p>
      * <table>
      *   <tbody>
@@ -401,7 +401,7 @@ public final class RomanNumeral implements Serializable,
     public static boolean isValid(String symbols) {
         try {
             parse(symbols);
-        } catch (Exception ex) {
+        } catch (NumberFormatException numFrmtEx) {
             return false;
         }
         return true;
