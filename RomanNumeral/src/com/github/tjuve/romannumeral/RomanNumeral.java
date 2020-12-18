@@ -362,6 +362,18 @@ public final class RomanNumeral implements Serializable,
         cache(this);
     }
     
+    /**
+     * Returns a {@code RomanNumeral} that represents the Roman numeral in
+     * standard form with the specified {@code int} value.
+     *
+     * @param   value    the value of the Roman numeral in standard form to be
+     *                   represented by the returned {@code RomanNumeral}.
+     * @return  a {@code RomanNumeral} with the specified value
+     * @throws  IllegalArgumentException    if the {@code int} is not
+     *                                      representable by a Roman numeral in
+     *                                      standard form.
+     * @see     #isValid(int)
+     */
     public static RomanNumeral of(int value) {
         if (!isValid(value)) {
             throw new IllegalArgumentException(forInput(value));
@@ -374,6 +386,19 @@ public final class RomanNumeral implements Serializable,
         return numeral;
     }
 
+    /**
+     * Returns a {@code RomanNumeral} that represents the Roman numeral in
+     * standard form with the specified {@code String} symbols.
+     *
+     * @param      symbols   the symbols of the Roman numeral in standard form
+     *                       to be represented by the returned 
+     *                       {@code RomanNumeral}.
+     * @return     a {@code RomanNumeral} with the specified symbols
+     * @exception  NumberFormatException    if the {@code String} does not
+     *                                      contain a parsable Roman numeral in
+     *                                      standard form.
+     * @see     #isValid(String)
+     */
     public static RomanNumeral parse(String symbols) {
         Integer value = valueCache.get(symbols);
         
