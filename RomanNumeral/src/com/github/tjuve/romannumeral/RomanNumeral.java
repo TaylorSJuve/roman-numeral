@@ -340,7 +340,7 @@ public final class RomanNumeral implements Serializable,
     }
     
     public static int valueOf(String symbols) {
-        return valueOf(symbols, true, true);
+        return parse(symbols).value;
     }
     
     public static boolean isValid(int value) {
