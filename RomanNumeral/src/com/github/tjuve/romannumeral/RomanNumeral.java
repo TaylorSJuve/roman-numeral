@@ -156,7 +156,7 @@ public final class RomanNumeral implements Serializable,
          * 
          * @implNote Must manually ensure RomanNumerals are properly indexed
          */
-        private static final RomanNumeral[] CACHE
+        private static final RomanNumeral[] cache
                 = new RomanNumeral[NUM_UNIQUE_NUMERALS + MIN_VALUE];
     }
     
@@ -175,7 +175,7 @@ public final class RomanNumeral implements Serializable,
          * @implNote {@link RomanNumeral#NUM_UNIQUE_NUMERALS} can be stored
          *           without needed to resize.
          */
-        private static final Map<String, Integer> CACHE
+        private static final Map<String, Integer> cache
                 = new HashMap<String, Integer>(NUM_UNIQUE_NUMERALS / 3 * 4 + 1);
     }
     
@@ -214,7 +214,7 @@ public final class RomanNumeral implements Serializable,
      * {@code i * 1000}; An empty {@code String} is at index 0 because there
      * is no representation for 0.
      */
-    private static final String[] THOUSANDS = {"", "M", "MM", "MMM"};
+    private static final String[] thousands = {"", "M", "MM", "MMM"};
     /**
      * All possible symbols for representing the hundredths place of an
      * {@code int}.
@@ -223,7 +223,7 @@ public final class RomanNumeral implements Serializable,
      * {@code i * 100}; An empty {@code String} is at index 0 because there
      * is no representation for 0.
      */
-    private static final String[] HUNDREDS =
+    private static final String[] hundreds =
             {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"}; 
     /**
      * All possible symbols for representing the tens place of an {@code int}.
@@ -232,7 +232,7 @@ public final class RomanNumeral implements Serializable,
      * {@code i * 10}; An empty {@code String} is at index 0 because there
      * is no representation for 0.
      */
-    private static final String[] TENS = 
+    private static final String[] tens = 
             {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
     /**
      * All possible symbols for representing the ones place of an
@@ -242,7 +242,7 @@ public final class RomanNumeral implements Serializable,
      * {@code i}; An empty {@code String} is at index 0 because there
      * is no representation for 0.
      */
-    private static final String[] ONES = 
+    private static final String[] ones = 
             {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
     /**
      * A constant holding a value used to indicate a {@code String} does not
@@ -289,9 +289,9 @@ public final class RomanNumeral implements Serializable,
         this.symbols = symbols;
         this.value = value;
         
-        if (NumeralCache.CACHE[value] == null) {
-            ValueCache.CACHE.put(symbols, value);
-            NumeralCache.CACHE[value] = this;
+        if (NumeralCache.cache[value] == null) {
+            ValueCache.cache.put(symbols, value);
+            NumeralCache.cache[value] = this;
         }
     }
     
@@ -300,7 +300,7 @@ public final class RomanNumeral implements Serializable,
             throw new IllegalArgumentException(forInput(value));
         }
         
-        RomanNumeral numeral = NumeralCache.CACHE[value];
+        RomanNumeral numeral = NumeralCache.cache[value];
         if (numeral == null) {
             numeral = new RomanNumeral(value);
         }
@@ -317,13 +317,13 @@ public final class RomanNumeral implements Serializable,
     }
     
     public static RomanNumeral parse(String symbols) {
-        Integer value = ValueCache.CACHE.get(symbols);
+        Integer value = ValueCache.cache.get(symbols);
         
         RomanNumeral numeral;
         if (value == null) {
             numeral = new RomanNumeral(symbols); // throws NumberFormatException
         } else {
-            numeral = NumeralCache.CACHE[value];
+            numeral = NumeralCache.cache[value];
         }
         return numeral;
     }
@@ -333,7 +333,7 @@ public final class RomanNumeral implements Serializable,
             throw new IllegalArgumentException(forInput(value));
         }
         
-        RomanNumeral numeral = NumeralCache.CACHE[value];
+        RomanNumeral numeral = NumeralCache.cache[value];
         if (numeral != null) {
             return numeral.symbols;
         }
@@ -344,10 +344,10 @@ public final class RomanNumeral implements Serializable,
             strBuilder.delete(0, MAX_SYMBOLS_LENGTH);
         }
         
-        strBuilder.append(THOUSANDS[value / 1000]);
-        strBuilder.append(HUNDREDS[value / 100 % 10]);
-        strBuilder.append(TENS[value / 10 % 10]);
-        strBuilder.append(ONES[value % 10]);
+        strBuilder.append(thousands[value / 1000]);
+        strBuilder.append(hundreds[value / 100 % 10]);
+        strBuilder.append(tens[value / 10 % 10]);
+        strBuilder.append(ones[value % 10]);
         
         return strBuilder.toString();
     }
@@ -427,7 +427,7 @@ public final class RomanNumeral implements Serializable,
             return INVALID_SYMBOLS_INDICATOR;
         }
         
-        Integer value = ValueCache.CACHE.get(s);
+        Integer value = ValueCache.cache.get(s);
         if (value != null) {
             return value;
         } 
