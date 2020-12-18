@@ -143,43 +143,6 @@ public final class RomanNumeral implements Serializable,
     }
     
     /**
-     * Cache to store each unique {@code RomanNumeral}.
-     * <p>
-     * The cache is initialized on first usage.
-     */
-    private static class NumeralCache {
-        /**
-         * Stores each unique {@code RomanNumeral}.
-         * <p>
-         * The index of a {@code RomanNumeral} is equal to it's {@code value}
-         * field (eg. {@code VI} goes at index {@code 6}.)
-         * 
-         * @implNote Must manually ensure RomanNumerals are properly indexed
-         */
-        private static final RomanNumeral[] cache
-                = new RomanNumeral[NUM_UNIQUE_NUMERALS + MIN_VALUE];
-    }
-    
-    /**
-     * Cache to store each unique {@code RomanNumeral}'s {@code value} field.
-     * <p>
-     * The cache is initialized on first usage.
-     */
-    private static class ValueCache {
-        /**
-         * Maps from each unique {@code RomanNumeral}'s {@code symbols} field
-         * to it's {@code value} field (eg. {@code "VI"} maps to {@code 6}.)
-         * 
-         * @implNote Must manually ensure to associate each {@code value} with
-         *           the specified correct {@code symbols}
-         * @implNote {@link RomanNumeral#NUM_UNIQUE_NUMERALS} can be stored
-         *           without needed to resize.
-         */
-        private static final Map<String, Integer> cache
-                = new HashMap<String, Integer>(NUM_UNIQUE_NUMERALS / 3 * 4 + 1);
-    }
-    
-    /**
      * A constant holding the maximum value a {@code RomanNumeral} can 
      * represent, 3999.
      */
@@ -198,9 +161,33 @@ public final class RomanNumeral implements Serializable,
      */
     private static final int NUM_UNIQUE_NUMERALS = MAX_VALUE - MIN_VALUE + 1;
     /**
+     * Cache to store each unique {@code RomanNumeral}.
+     * <p>
+     * The index of a {@code RomanNumeral} is equal to it's {@code value}
+     * field (eg. {@code VI} goes at index {@code 6}.)
+     * 
+     * @implNote Must manually ensure RomanNumerals are properly indexed
+     */
+    private static final RomanNumeral[] numeralCache
+            = new RomanNumeral[NUM_UNIQUE_NUMERALS + MIN_VALUE];
+    /**
+     * Cache to store each unique {@code RomanNumeral}'s {@code value} field.
+     * <p>
+     * Maps from each unique {@code RomanNumeral}'s {@code symbols} field
+     * to it's {@code value} field (eg. {@code "VI"} maps to {@code 6}.)
+     * 
+     * 
+     * @implNote Must manually ensure to associate each {@code value} with
+     *           the specified correct {@code symbols}
+     * @implNote {@link #NUM_UNIQUE_NUMERALS} can be stored
+     *           without needing to resize.
+     */
+    private static final Map<String, Integer> valueCache
+            = new HashMap<String, Integer>(NUM_UNIQUE_NUMERALS / 3 * 4 + 1);
+    /**
      * A constant holding the maximum length of a Roman numeral, 15 (from
      * "MMMDCCCLXXXVIII".length())
-     */                                          
+     */
     private static final int MAX_SYMBOLS_LENGTH = 15;
     /**
      * A constant holding the maximum length of a Roman numeral, 15 (from
@@ -280,7 +267,6 @@ public final class RomanNumeral implements Serializable,
         this(symbols, valueOf(symbols, true, false));
     }
     
-    
     /*
      * Caution: valueOf(symbols) must equal value and
      * toString(value) must equal symbols for this to be valid!
@@ -289,9 +275,9 @@ public final class RomanNumeral implements Serializable,
         this.symbols = symbols;
         this.value = value;
         
-        if (NumeralCache.cache[value] == null) {
-            ValueCache.cache.put(symbols, value);
-            NumeralCache.cache[value] = this;
+        if (numeralCache[value] == null) {
+            valueCache.put(symbols, value);
+            numeralCache[value] = this;
         }
     }
     
@@ -300,7 +286,7 @@ public final class RomanNumeral implements Serializable,
             throw new IllegalArgumentException(forInput(value));
         }
         
-        RomanNumeral numeral = NumeralCache.cache[value];
+        RomanNumeral numeral = numeralCache[value];
         if (numeral == null) {
             numeral = new RomanNumeral(value);
         }
@@ -313,17 +299,18 @@ public final class RomanNumeral implements Serializable,
         if (symbols == null) {
             throw new NumberFormatException(forNullInput());
         }
+        
         return parse((String) symbols.subSequence(beginIndex, endIndex));
     }
     
     public static RomanNumeral parse(String symbols) {
-        Integer value = ValueCache.cache.get(symbols);
+        Integer value = valueCache.get(symbols);
         
         RomanNumeral numeral;
         if (value == null) {
             numeral = new RomanNumeral(symbols); // throws NumberFormatException
         } else {
-            numeral = NumeralCache.cache[value];
+            numeral = numeralCache[value];
         }
         return numeral;
     }
@@ -333,7 +320,7 @@ public final class RomanNumeral implements Serializable,
             throw new IllegalArgumentException(forInput(value));
         }
         
-        RomanNumeral numeral = NumeralCache.cache[value];
+        RomanNumeral numeral = numeralCache[value];
         if (numeral != null) {
             return numeral.symbols;
         }
@@ -427,7 +414,7 @@ public final class RomanNumeral implements Serializable,
             return INVALID_SYMBOLS_INDICATOR;
         }
         
-        Integer value = ValueCache.cache.get(s);
+        Integer value = valueCache.get(s);
         if (value != null) {
             return value;
         } 
