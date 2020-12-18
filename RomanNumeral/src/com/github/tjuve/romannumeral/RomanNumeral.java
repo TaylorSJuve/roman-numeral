@@ -254,6 +254,20 @@ public final class RomanNumeral implements Serializable,
      */
     public final int value;
     
+    /**
+     * Constructs a newly allocated {@code RomanNumeral} object that represents
+     * the Roman numeral with the specified {@code int} value.
+     *
+     * @param   value   the value to be represented by the
+     *                  {@code RomanNumeral} object.
+     * @throws  IllegalArgumentException    if the {@code int} is not
+     *                                      representable by a Roman numeral in
+     *                                      Standard form.
+     * @see     #isValid(int)
+     * 
+     * @implNote Only one instance of RomanNumeral per unique Roman numeral 
+     * should exist.
+     */
     private RomanNumeral(int value) {
         this.symbols = toString(value);
         this.value = value;
@@ -261,6 +275,20 @@ public final class RomanNumeral implements Serializable,
         cache(this);
     }
     
+    /**
+     * Constructs a newly allocated {@code RomanNumeral} object that represents
+     * the Roman numeral with the specified {@code String} symbols.
+     *
+     * @param      symbols   the symbols to be represented by the
+     *                       {@code RomanNumeral} object.
+     * @exception  NumberFormatException  if the {@code String} does not
+     *                                    contain a parsable Roman numeral in
+     *                                    Standard form.
+     * @see     #isValid(String)
+     * 
+     * @implNote Only one instance of RomanNumeral per unique Roman numeral 
+     * should exist.
+     */
     /*
      * symbols must be non-empty and exactly (from left-to-right):
      * 0-3 M's before 
@@ -453,8 +481,7 @@ public final class RomanNumeral implements Serializable,
             numeralCache[numeral.value] = numeral;
         }
     }
-    
-    
+     
     private static String forInput(int value) {
         return "For input int: " + value;
     }
