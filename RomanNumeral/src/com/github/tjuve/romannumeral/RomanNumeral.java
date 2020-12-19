@@ -411,6 +411,19 @@ public final class RomanNumeral implements Serializable,
         return numeral;
     }
     
+    /**
+     * Returns a {@code String} representation of the Roman numeral in standard
+     * form with the specified {@code int} value.
+     *
+     * @param   value   the value of the Roman numeral in standard form to be
+     *                  represented by the returned {@code String}.
+     * @return  a {@code String} representing the Roman numeral in standard
+     *          form with the specified value.
+     * @throws  IllegalArgumentException    if the {@code int} is not
+     *                                      representable by a Roman numeral in
+     *                                      standard form.
+     * @see     #isValid(int)
+     */
     public static String toString(int value) {
         if (!isValid(value)) {
             throw new IllegalArgumentException(forInput(value));
@@ -435,14 +448,44 @@ public final class RomanNumeral implements Serializable,
         return strBuilder.toString();
     }
     
+    /**
+     * Returns an {@code int} with the value of the Roman numeral in standard
+     * form specified by the {@code String} symbols. 
+     *
+     * @param      symbols   the symbols of the Roman numeral in standard form 
+     *                       with value equal to the returned {@code int}.
+     * @return     an {@code int} with the value of the Roman numeral in
+     *             standard form specified by the {@code String} symbols.
+     * @exception  NumberFormatException    if the {@code String} does not
+     *                                      contain a parsable Roman numeral in
+     *                                      standard form.
+     * @see     #isValid(String)
+     */
     public static int valueOf(String symbols) {
         return parse(symbols).value;
     }
     
+    /**
+     * Returns {@code true} if, and only if, the specified {@code int} value is
+     * representable by a Roman numeral in standard form.
+     *
+     * @param   value   the value to check.
+     * @return  {@code true} if the specified {@code int} value is 
+     *          representable by  a Roman numeral in standard form, otherwise
+     *          {@code false}.
+     */
     public static boolean isValid(int value) {
         return MAX_VALUE >= value && MIN_VALUE <= value;
     }
     
+    /**
+     * Returns {@code true} if, and only if, the specified {@code String}
+     * symbols represent a Roman numeral in standard form.
+     *
+     * @param   symbols   the symbols to check.
+     * @return  {@code true} if the specified {@code String} symbols represent
+     *          a Roman numeral in standard form, otherwise {@code false}.
+     */
     public static boolean isValid(String symbols) {
         try {
             parse(symbols);
@@ -537,6 +580,7 @@ public final class RomanNumeral implements Serializable,
     public boolean equals(Object obj) {
         if (obj instanceof RomanNumeral) {
             // faster but more dangerous than checking String equality also
+            // TODO use compareTo?
             return value == ((RomanNumeral) obj).value; 
         } else {
             return false;
