@@ -496,43 +496,55 @@ public final class RomanNumeral implements Serializable,
     }
     
     public static RomanNumeral addExact(RomanNumeral x, RomanNumeral y) {
-        return of(calculate((a, b) -> a + b, x.value, y.value));
+        return ofArithmeticResult(x.value + y.value);
     }
     
     public static RomanNumeral decrementExact​(RomanNumeral a) {
-        return of(calculate((x, y) -> x - y, a.value, 1));
+        return ofArithmeticResult(a.value - 1);
     }
     
     public static RomanNumeral divideExact(RomanNumeral x, RomanNumeral y) {
-        return of(calculate((a, b) -> a / b, x.value, y.value));
+        return ofArithmeticResult(x.value / y.value);
     }
     
     public static RomanNumeral incrementExact​(RomanNumeral a) {
-        return of(calculate((x, y) -> x + y, a.value, 1));
+        return ofArithmeticResult(a.value + 1);
     }
     
     public static RomanNumeral modExact(RomanNumeral x, RomanNumeral y) {
-        return of(calculate((a, b) -> a % b, x.value, y.value));
+        return ofArithmeticResult(x.value % y.value);
     }
     
     public static RomanNumeral multiplyExact​(RomanNumeral x, RomanNumeral y) {
-        return of(calculate((a, b) -> a * b, x.value, y.value));
+        return ofArithmeticResult(x.value * y.value);
     }
     
     public static RomanNumeral powExact(RomanNumeral x, RomanNumeral y) {  
-        return of(calculate((a, b) -> (int) Math.pow(a, b), x.value, y.value));
+        return ofArithmeticResult((int) Math.pow(x.value, y.value));
     }
 
     public static RomanNumeral subtractExact​(RomanNumeral x, RomanNumeral y) {
-        return of(calculate((a, b) -> a - b, x.value, y.value));
+        return ofArithmeticResult(x.value - y.value);
     }
     
     public static RomanNumeral max(RomanNumeral a, RomanNumeral b) {
-        return maxOrMin((x, y) -> Math.max(x, y), a, b);
+        RomanNumeral max;
+        if (a.value >= b.value) {
+            max = a;
+        } else {
+            max = b;
+        }
+        return max;
     }
     
     public static RomanNumeral min(RomanNumeral a, RomanNumeral b) {
-        return maxOrMin((x, y) -> Math.min(x, y), a, b);
+        RomanNumeral min;
+        if (a.value <= b.value) {
+            min = a;
+        } else {
+            min = b;
+        }
+        return min;
     }
     
     private static void cache(RomanNumeral numeral) {
@@ -542,10 +554,6 @@ public final class RomanNumeral implements Serializable,
         }
     }
      
-    private static String forInput(int value) {
-        return "For input int: " + value;
-    }
-    
     private static String forNullInput() {
         return "null";
     }
@@ -554,21 +562,15 @@ public final class RomanNumeral implements Serializable,
         return "For input String: \"" + symbols + "\"";
     }
     
-    private static int calculate(IntBinaryOperator op, int x, int y) {
-        int result = op.applyAsInt(x, y);
-        if (isValid(result)) {
-            return result;
-        } else {
-            throw new ArithmeticException("RomanNumeral overflow");
-        }
+    private static String forInput(int value) {
+        return "For input int: " + value;
     }
     
-    private static RomanNumeral maxOrMin(IntBinaryOperator op, RomanNumeral a,
-                                         RomanNumeral b) {
-        if (op.applyAsInt(a.value, b.value) == a.value) {
-            return a;
+    private static RomanNumeral ofArithmeticResult(int result) {
+        if (isValid(result)) {
+            return of(result);
         } else {
-            return b;
+            throw new ArithmeticException("RomanNumeral overflow");
         }
     }
     
@@ -580,7 +582,6 @@ public final class RomanNumeral implements Serializable,
     public boolean equals(Object obj) {
         if (obj instanceof RomanNumeral) {
             // faster but more dangerous than checking String equality also
-            // TODO use compareTo?
             return value == ((RomanNumeral) obj).value; 
         } else {
             return false;
